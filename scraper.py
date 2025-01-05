@@ -3,14 +3,22 @@ from selenium.webdriver.common.by import By
 from pymongo import MongoClient
 import uuid
 from datetime import datetime
+from selenium.webdriver.chrome.options import Options
 
 # MongoDB setup
 client = MongoClient('mongodb+srv://pratulmakar7:pratulmakar7@cluster0.7rikt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
 db = client['trendin_top5']
 collection = db['trending_topics']
 
-# Selenium setup without proxy
-driver = webdriver.Chrome()
+# Headless mode setup
+options = Options()
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-dev-shm-usage")
+
+# Selenium setup with headless mode
+driver = webdriver.Chrome(options=options)
 
 try:
     # Navigate to Twitter and log in
