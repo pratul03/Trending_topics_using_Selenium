@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}Fetch Trends{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Twitter Trends</h1>
+<div class="text-center mb-3 block">
+    <form method="GET" action="/fetch_trends" style="display: inline-block; margin-right: 20px;">
+        <button type="submit" class="btn btn-primary">Fetch Latest Trends</button>
+    </form>    
+    <form method="GET" action="/dashboard" style="display: inline-block;">
+        <button type="submit" class="btn btn-primary">Show Previous Trends</button>
+    </form>    
+</div>
+
+
+{% if trends %}
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Trend</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Request ID</td>
+                <td>{{object_id}}</td>
+            </tr>
+            <tr>
+                <td>IP Address</td>
+                <td>{{ip_address}}</td>
+            </tr>
+            {% for trend in trends %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ trend }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-center text-muted">No trends fetched yet. Click the button above to fetch the latest trends.</p>
+{% if error %}
+    <div>{{error}}</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

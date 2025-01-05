@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Twitter Trends Dashboard{% endblock %}
+
+{% block content %}
+<h1 class="text-center mb-4">Twitter Trends Dashboard</h1>
+<div class="text-center mb-3">
+    <form method="GET" action="/fetch_trends">
+        <button type="submit" class="btn btn-primary">Fetch Latest Trends</button>
+    </form>    
+</div>
+
+{% if records %}
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Object ID</th>
+                <th>IP Address</th>
+                <th>Trend 1</th>
+                <th>Trend 2</th>
+                <th>Trend 3</th>
+                <th>Trend 4</th>
+                <th>Trend 5</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr>
+                <td>{{ record._id }}</td>
+                <td>{{ record.ip_address }}</td>
+                <td>{{ record.trends[0] if record.trends|length > 0 else 'N/A' }}</td>
+                <td>{{ record.trends[1] if record.trends|length > 1 else 'N/A' }}</td>
+                <td>{{ record.trends[2] if record.trends|length > 2 else 'N/A' }}</td>
+                <td>{{ record.trends[3] if record.trends|length > 3 else 'N/A' }}</td>
+                <td>{{ record.trends[4] if record.trends|length > 4 else 'N/A' }}</td>
+                <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-center text-muted">No trends data available. Click the button above to fetch trends.</p>
+{% if error %}
+    <div class="alert alert-danger">{{error}}</div>
+{% endif %}
+{% endif %}
+{% endblock %}
