@@ -1,18 +1,23 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from pymongo import MongoClient
+from dotenv import load_dotenv
 import uuid
 from datetime import datetime
-from selenium.webdriver.chrome.options import Options
-from dotenv import load_dotenv
 import os
+from selenium.webdriver.chrome.options import Options
 
-# Load environment variables from .env
+# Load environment variables
 load_dotenv()
 
+MONGO_URI = os.getenv("MONGO_URI")
+TWITTER_USERNAME = os.getenv("TWITTER_USERNAME")
+TWITTER_PASSWORD = os.getenv("TWITTER_PASSWORD")
+
 # MongoDB setup
-MONGODB_URI = os.getenv('MONGODB_URI')
-client = MongoClient(MONGODB_URI)
+client = MongoClient(MONGO_URI)
 db = client['trendin_top5']
 collection = db['trending_topics']
 
@@ -27,25 +32,26 @@ options.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(options=options)
 
 try:
-    # Navigate to Twitter and log in
+    # Navigate to Twitter login page
     driver.get("https://twitter.com/login")
     
-    # Fetch Twitter credentials from environment variables
-    username_field = driver.find_element(By.NAME, "text")
-    username_field.send_keys(os.getenv('TWITTER_USERNAME'))
-    driver.find_element(By.XPATH, "//span[text()='Next']").click()
-    
-    # Wait for password field to load
-    driver.implicitly_wait(5)
-    password_field = driver.find_element(By.NAME, "password")
-    password_field.send_keys(os.getenv('TWITTER_PASSWORD'))
-    driver.find_element(By.XPATH, "//span[text()='Log in']").click()
+    # Wait for username field and enter username
+    wait = WebDriverWait(driver, 10)
+    username_field = wait.until(EC.presence_of_element_located((By.NAME, "session[username_or_email]")))
+    username_field.send_keys(TWITTER_USERNAME)
 
-    # Navigate to home page
-    driver.implicitly_wait(10)
-    driver.get("https://twitter.com/home")
+    # Click 'Next' button
+    next_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Next']")))
+    next_button.click()
 
-    # Scrape trending topics
+    # Wait for password field and enter password
+    password_field = wait.until(EC.presence_of_element_located((By.NAME, "password")))
+    password_field.send_keys(TWITTER_PASSWORD)
+    login_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[text()='Log in']")))
+    login_button.click()
+
+    # Navigate to home page and scrape trending topics
+    wait.until(EC.presence_of_element_located((By.XPATH, "//section[contains(@aria-labelledby, 'accessible-list')]")))
     trends = driver.find_elements(By.XPATH, "//section[contains(@aria-labelledby, 'accessible-list')]//span")
     trending_topics = [trend.text for trend in trends[:5]]
 
@@ -59,11 +65,11 @@ try:
     # Store data in MongoDB
     record = {
         "_id": unique_id,
-        "trend1": trending_topics[0],
-        "trend2": trending_topics[1],
-        "trend3": trending_topics[2],
-        "trend4": trending_topics[3],
-        "trend5": trending_topics[4],
+        "trend1": trending_topics[0] if len(trending_topics) > 0 else "N/A",
+        "trend2": trending_topics[1] if len(trending_topics) > 1 else "N/A",
+        "trend3": trending_topics[2] if len(trending_topics) > 2 else "N/A",
+        "trend4": trending_topics[3] if len(trending_topics) > 3 else "N/A",
+        "trend5": trending_topics[4] if len(trending_topics) > 4 else "N/A",
         "timestamp": timestamp,
         "ip_address": ip_address
     }
