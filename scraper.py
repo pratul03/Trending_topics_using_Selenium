@@ -4,9 +4,15 @@ from pymongo import MongoClient
 import uuid
 from datetime import datetime
 from selenium.webdriver.chrome.options import Options
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env
+load_dotenv()
 
 # MongoDB setup
-client = MongoClient('mongodb+srv://pratulmakar7:pratulmakar7@cluster0.7rikt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+MONGODB_URI = os.getenv('MONGODB_URI')
+client = MongoClient(MONGODB_URI)
 db = client['trendin_top5']
 collection = db['trending_topics']
 
@@ -24,15 +30,15 @@ try:
     # Navigate to Twitter and log in
     driver.get("https://twitter.com/login")
     
-    # Enter username and password
-    username = driver.find_element(By.NAME, "text")
-    username.send_keys("seleniumte12839")
+    # Fetch Twitter credentials from environment variables
+    username_field = driver.find_element(By.NAME, "text")
+    username_field.send_keys(os.getenv('TWITTER_USERNAME'))
     driver.find_element(By.XPATH, "//span[text()='Next']").click()
     
     # Wait for password field to load
     driver.implicitly_wait(5)
-    password = driver.find_element(By.NAME, "password")
-    password.send_keys("pratulMakar@@69")
+    password_field = driver.find_element(By.NAME, "password")
+    password_field.send_keys(os.getenv('TWITTER_PASSWORD'))
     driver.find_element(By.XPATH, "//span[text()='Log in']").click()
 
     # Navigate to home page

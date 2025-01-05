@@ -1,11 +1,18 @@
 from flask import Flask, render_template, jsonify
 import subprocess
 from pymongo import MongoClient
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env
+load_dotenv()
+
+# Flask app setup
 app = Flask(__name__)
 
 # MongoDB setup
-client = MongoClient('mongodb+srv://pratulmakar7:pratulmakar7@cluster0.7rikt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+MONGODB_URI = os.getenv('MONGODB_URI')
+client = MongoClient(MONGODB_URI)
 db = client['trendin_top5']
 collection = db['trending_topics']
 
