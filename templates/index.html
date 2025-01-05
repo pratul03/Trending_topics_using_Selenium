@@ -15,7 +15,7 @@
             
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
-                <p>These are the most happening topics as on ${new Date(data.timestamp)}</p>
+                <p>These are the most happening topics as of ${new Date(data.timestamp).toLocaleString()}</p>
                 <ul>
                     <li>${data.trend1}</li>
                     <li>${data.trend2}</li>
@@ -24,7 +24,6 @@
                     <li>${data.trend5}</li>
                 </ul>
                 <p>The IP address used for this query was ${data.ip_address}.</p>
-                <pre>${JSON.stringify(data, null, 2)}</pre>
             `;
         }
     </script>
