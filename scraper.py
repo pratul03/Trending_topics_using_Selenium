@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from pymongo import MongoClient
 import uuid
 from datetime import datetime
@@ -10,17 +9,8 @@ client = MongoClient('mongodb+srv://pratulmakar7:pratulmakar7@cluster0.7rikt.mon
 db = client['trendin_top5']
 collection = db['trending_topics']
 
-# Proxy setup
-proxy = Proxy()
-proxy.proxy_type = ProxyType.MANUAL
-proxy.http_proxy = "your-proxymesh-credentials:port"
-proxy.ssl_proxy = "your-proxymesh-credentials:port"
-
-capabilities = webdriver.DesiredCapabilities.CHROME
-proxy.add_to_capabilities(capabilities)
-
-# Selenium setup
-driver = webdriver.Chrome(desired_capabilities=capabilities)
+# Selenium setup without proxy
+driver = webdriver.Chrome()
 
 try:
     # Navigate to Twitter and log in
@@ -28,13 +18,13 @@ try:
     
     # Enter username and password
     username = driver.find_element(By.NAME, "text")
-    username.send_keys("your-twitter-username")
+    username.send_keys("seleniumte12839")
     driver.find_element(By.XPATH, "//span[text()='Next']").click()
     
     # Wait for password field to load
     driver.implicitly_wait(5)
     password = driver.find_element(By.NAME, "password")
-    password.send_keys("your-twitter-password")
+    password.send_keys("pratulMakar@@69")
     driver.find_element(By.XPATH, "//span[text()='Log in']").click()
 
     # Navigate to home page
@@ -45,8 +35,8 @@ try:
     trends = driver.find_elements(By.XPATH, "//section[contains(@aria-labelledby, 'accessible-list')]//span")
     trending_topics = [trend.text for trend in trends[:5]]
 
-    # Get proxy IP address
-    ip_address = proxy.http_proxy.split(":")[0]
+    # Use local IP address
+    ip_address = "Local Machine"
 
     # Create unique ID and timestamp
     unique_id = str(uuid.uuid4())
