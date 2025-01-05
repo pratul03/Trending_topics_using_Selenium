@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trending Topics</title>
+</head>
+<body>
+    <h1>Trending Topics</h1>
+    <button onclick="fetchTrends()">Click here to run the script</button>
+    <div id="results"></div>
+
+    <script>
+        async function fetchTrends() {
+            const response = await fetch('/run-script');
+            const data = await response.json();
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <p>These are the most happening topics as on ${new Date(data.timestamp)}</p>
+                <ul>
+                    <li>${data.trend1}</li>
+                    <li>${data.trend2}</li>
+                    <li>${data.trend3}</li>
+                    <li>${data.trend4}</li>
+                    <li>${data.trend5}</li>
+                </ul>
+                <p>The IP address used for this query was ${data.ip_address}.</p>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+        }
+    </script>
+</body>
+</html>
